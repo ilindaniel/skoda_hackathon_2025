@@ -8,6 +8,7 @@ object Repository {
         transaction {
             Employee.batchInsert(rows) { row ->
                 this[Employee.personalNumber] = row["persstat_start_month.personal_number"]!!.trimStart('0')
+                this[Employee.profession] = row["persstat_start_month.profession"]!!
             }
         }
     }
