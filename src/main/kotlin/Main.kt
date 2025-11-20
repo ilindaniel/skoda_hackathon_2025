@@ -1,5 +1,6 @@
 package org.example
 
+import org.example.dao.CourseHistory
 import org.example.dao.Employee
 import org.example.dao.Repository
 import org.example.parser.xlsxParser
@@ -16,9 +17,12 @@ fun main() {
     )
 
     transaction {
-        SchemaUtils.create(Employee)
+        SchemaUtils.create(Employee, CourseHistory)
     }
 
     val employees = xlsxParser("data/ERP_SK1.Start_month - SE.xlsx")
     Repository.insertEmployees(employees)
+
+    val coursesHistory = xlsxParser("data/RE_VZD_STA_007.xlsx")
+    Repository.insertCourses(coursesHistory)
 }

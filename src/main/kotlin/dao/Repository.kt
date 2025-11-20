@@ -12,4 +12,13 @@ object Repository {
             }
         }
     }
+
+    fun insertCourses(rows: List<Map<String, String?>>) {
+        transaction {
+            CourseHistory.batchInsert(rows) { row ->
+                this[CourseHistory.personalNumber] = row["ID účastníka"]!!
+                this[CourseHistory.objectId] = row["IDOBJ"]!!
+            }
+        }
+    }
 }
