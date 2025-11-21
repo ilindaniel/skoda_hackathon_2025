@@ -1,6 +1,7 @@
 package org.example.dao
 
 import org.example.dto.EmployeeDTO
+import org.example.dto.PositionDTO
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -30,6 +31,32 @@ object Repository {
         }
     }
 
+    fun insertPositions(rows: List<Map<String, String?>>) {
+        val uniquePositions = rows
+            .mapNotNull { row ->
+                val id = row["persstat_start_month.planned_position_id"]
+                val pos = row["persstat_start_month.planned_position"]
+                if (id != null && pos != null) id to pos else null
+            }
+            .distinctBy { it.first } // ensures unique position_id
+
+        transaction {
+            Position.batchInsert(uniquePositions) { (id, pos) ->
+                this[Position.id] = id
+                this[Position.description] = pos
+            }
+        }
+    }
+
+    fun getAllPositions(): List<PositionDTO> = transaction {
+        Position.selectAll()
+            .map { row ->
+                PositionDTO(
+                    id = row[Position.id],
+                    description = row[Position.description]
+                )
+            }
+    }
 
     fun insertCourses(rows: List<Map<String, String?>>) {
         transaction {

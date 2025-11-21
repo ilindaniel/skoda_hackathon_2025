@@ -10,6 +10,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import org.example.dao.CourseHistory
 import org.example.dao.Employee
+import org.example.dao.Position
 import org.example.dao.Repository
 import org.example.dao.Skill
 import org.example.parser.xlsxParser
@@ -27,7 +28,7 @@ fun main() {
     )
     initializeDatabase()
 
-    embeddedServer(Netty, port = 8000) {
+    embeddedServer(Netty, host = "127.0.0.1", port = 8000) {
         install(ContentNegotiation) {
             json()
         }
@@ -36,17 +37,23 @@ fun main() {
                 val employees = Repository.getAllEmployees()
                 call.respond(employees)
             }
+
+            get ("/api/roles") {
+                val positions = Repository.getAllPositions()
+                call.respond(positions)
+            }
         }
     }.start(wait = true)
 }
 
 fun initializeDatabase() {
     transaction {
-        SchemaUtils.create(Employee, CourseHistory, Skill)
+        SchemaUtils.create(Employee, CourseHistory, Skill, Position)
 
         if (Employee.selectAll().empty()) {
             val employees = xlsxParser("data/ERP_SK1.Start_month - SE.xlsx")
             Repository.insertEmployees(employees)
+            Repository.insertPositions(employees)
         }
 
         if (CourseHistory.selectAll().empty()) {
@@ -61,5 +68,10 @@ fun initializeDatabase() {
             )
             Repository.insertSkills(skillsMapping)
         }
+
+//        if (Qualification.selectAll().empty()) {
+//            val requiredQualifications = xlsxParser("data/ZPE_KOM_KVAL.xlsx")
+//            Repository.insertRequiredQualifications(requiredQualifications)
+//        }
     }
 }
