@@ -23,8 +23,8 @@ object Repository {
         Employee.selectAll().map { row ->
             EmployeeDTO(
                 personalNumber = row[Employee.personalNumber],
-                profession = row[Employee.profession],
                 username = row[Employee.username],
+                profession = row[Employee.profession],
                 plannedPositionId = row[Employee.plannedPositionId],
                 plannedPosition = row[Employee.plannedPosition]
             )

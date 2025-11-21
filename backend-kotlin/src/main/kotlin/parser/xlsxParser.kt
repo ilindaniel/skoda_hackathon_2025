@@ -15,6 +15,7 @@ fun xlsxParser(path: String, sheetIndex: Int = 0): List<Map<String, String?>> {
             val cell = row.getCell(colIndex)
             when (cell?.cellType) {
                 CellType.STRING -> cell.stringCellValue.trim()
+                CellType.NUMERIC -> cell.numericCellValue.toLong().toString()
                 CellType.BLANK, null -> null
                 else -> cell.toString()
             }

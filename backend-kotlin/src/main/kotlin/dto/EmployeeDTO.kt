@@ -7,12 +7,12 @@ import kotlinx.serialization.Serializable
 data class EmployeeDTO(
     @SerialName("personal_number")
     val personalNumber: String,
-    @SerialName("profession")
-    val profession: String,
     @SerialName("user_name")
     val username: String,
-    @SerialName("planned_profession_id")
+    @SerialName("profession")
+    val profession: String,
+    @SerialName("planned_position_id")
     val plannedPositionId: String,
-    @SerialName("planned_profession")
+    @SerialName("planned_position")
     val plannedPosition: String
 )
