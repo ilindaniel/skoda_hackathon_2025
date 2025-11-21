@@ -41,6 +41,9 @@ fun main() {
             json()
         }
         routing {
+            get ("/health") {
+                call.respond(HttpStatusCode.OK)
+            }
             get ("/api/employees") {
                 val employees = Repository.getAllEmployees()
                 call.respond(employees)
