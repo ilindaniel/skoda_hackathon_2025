@@ -1,5 +1,13 @@
 package org.example
 
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.install
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.response.respond
+import io.ktor.server.routing.get
+import io.ktor.server.routing.routing
 import org.example.dao.CourseHistory
 import org.example.dao.Employee
 import org.example.dao.Repository
@@ -18,6 +26,18 @@ fun main() {
         password = System.getenv("DB_PASSWORD")
     )
     initializeDatabase()
+
+    embeddedServer(Netty, port = 8000) {
+        install(ContentNegotiation) {
+            json()
+        }
+        routing {
+            get ("/api/employees") {
+                val employees = Repository.getAllEmployees()
+                call.respond(employees)
+            }
+        }
+    }.start(wait = true)
 }
 
 fun initializeDatabase() {

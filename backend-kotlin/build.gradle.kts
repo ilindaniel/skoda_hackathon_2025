@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.1.21"
+    kotlin("plugin.serialization") version "2.2.21"
     application
 }
 
@@ -15,6 +16,13 @@ repositories {
 }
 
 dependencies {
+    // Server
+    val ktorVersion = "3.3.2"
+    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+
+
     // SQL library
     val exposedVersion = "0.61.0"
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
