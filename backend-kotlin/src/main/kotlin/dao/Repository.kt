@@ -169,4 +169,13 @@ object Repository {
             }
         }
     }
+
+    fun getEmployeeWithRoleId(roleId: String): String? =
+        transaction {
+            (Employee innerJoin CurrentPosition)
+                .selectAll()
+                .where { CurrentPosition.positionId eq roleId }
+                .map { it[Employee.personalNumber] }
+                .singleOrNull()
+        }
 }

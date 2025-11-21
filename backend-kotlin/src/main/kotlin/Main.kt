@@ -19,6 +19,7 @@ import org.example.dao.CurrentPosition
 import org.example.dao.Qualification
 import org.example.dao.Repository
 import org.example.dao.Skill
+import org.example.dto.Difference
 import org.example.parser.xlsxParser
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -55,6 +56,31 @@ fun main() {
                     ?: return@get call.respondText("Missing personal_number", status = HttpStatusCode.BadRequest)
                 val profile = Repository.getProfile(personalNumber)
                 call.respond(profile)
+            }
+
+            get ("/api/gaps") {
+                val params = call.request.queryParameters
+                val personalNumber = params["personal_number"] ?: return@get call.respondText("Missing personal_number", status = HttpStatusCode.BadRequest)
+                val roleId = params["role_id"]
+
+                val someoneWithThatRole = Repository.getEmployeeWithRoleId(roleId!!)
+                    ?: return@get call.respondText("Not found", status = HttpStatusCode.NotFound)
+                val destinationProfile = Repository.getProfile(someoneWithThatRole)
+                val profile = Repository.getProfile(personalNumber)
+                val skills = profile.skills
+                val destinationSkills = destinationProfile.skills
+                val skillsDifference = destinationSkills.minus(skills)
+                val qualifications = profile.qualifications
+                val destinationQualifications = destinationProfile.qualifications
+                val qualificationDifference = destinationQualifications.minus(qualifications)
+
+                val diff = Difference(
+                    employee_qualifications = qualifications,
+                    missing_qualifications = qualificationDifference,
+                    employee_skills = skills,
+                    missing_skills = skillsDifference
+                )
+                call.respond(diff)
             }
         }
     }.start(wait = true)
