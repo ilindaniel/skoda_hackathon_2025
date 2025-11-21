@@ -15,6 +15,7 @@ import org.example.dao.CourseHistory
 import org.example.dao.CourseSkill
 import org.example.dao.Employee
 import org.example.dao.Position
+import org.example.dao.CurrentPosition
 import org.example.dao.Qualification
 import org.example.dao.Repository
 import org.example.dao.Skill
@@ -23,6 +24,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import tsvParser
 
 fun main() {
     Database.connect(
@@ -60,12 +62,17 @@ fun main() {
 
 fun initializeDatabase() {
     transaction {
-        SchemaUtils.create(Employee, CourseSkill, Course, CourseHistory, Skill, Position, Qualification)
+        SchemaUtils.create(Employee, CourseSkill, Course, CourseHistory, Skill, Position, CurrentPosition, Qualification)
 
         if (Employee.selectAll().empty()) {
             val employees = xlsxParser("data/ERP_SK1.Start_month - SE.xlsx")
             Repository.insertEmployees(employees)
             Repository.insertPositions(employees)
+        }
+
+        if (CurrentPosition.selectAll().empty()) {
+            val positions = tsvParser("data/RE_RHRHAZ00_P_S.txt")
+            Repository.insertCurrentPositions(positions)
         }
 
         if (Skill.selectAll().empty()) {

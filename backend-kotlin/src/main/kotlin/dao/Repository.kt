@@ -160,4 +160,13 @@ object Repository {
             }
         }
     }
+
+    fun insertCurrentPositions(positions: List<Pair<String, String>>) {
+        transaction {
+            CurrentPosition.batchInsert(positions) { position ->
+                this[CurrentPosition.personalNumber] = position.first
+                this[CurrentPosition.positionId] = position.second
+            }
+        }
+    }
 }
