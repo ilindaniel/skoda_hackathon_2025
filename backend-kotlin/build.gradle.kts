@@ -1,5 +1,10 @@
 plugins {
     kotlin("jvm") version "2.1.21"
+    application
+}
+
+application {
+    mainClass.set("MainKt")
 }
 
 group = "org.example"
