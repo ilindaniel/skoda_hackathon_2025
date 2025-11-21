@@ -8,13 +8,6 @@ set -e
 echo "🚀 Starting AI Skill Coach..."
 echo ""
 
-# Check if backend virtual environment exists
-if [ ! -d "backend/venv" ]; then
-    echo "❌ Backend virtual environment not found!"
-    echo "Please run: cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt"
-    exit 1
-fi
-
 # Check if frontend node_modules exists
 if [ ! -d "frontend/node_modules" ]; then
     echo "❌ Frontend dependencies not installed!"
@@ -23,12 +16,12 @@ if [ ! -d "frontend/node_modules" ]; then
 fi
 
 # Start backend
-echo "🔧 Starting backend server..."
-cd backend
-./venv/bin/python -u main.py > backend.log 2>&1 &
-BACKEND_PID=$!
-cd ..
-echo "   Waiting for backend to initialize (this may take 2-3 minutes with large data files)..."
+#echo "🔧 Starting backend server..."
+#cd backend
+#./venv/bin/python -u main.py > backend.log 2>&1 &
+#BACKEND_PID=$!
+#cd ..
+#echo "   Waiting for backend to initialize (this may take 2-3 minutes with large data files)..."
 
 # Check backend health with retries
 MAX_RETRIES=36  # 36 retries * 5 seconds = 3 minutes
