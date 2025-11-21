@@ -3,6 +3,7 @@ package org.example
 import org.example.dao.CourseHistory
 import org.example.dao.Employee
 import org.example.dao.Repository
+import org.example.dao.Skill
 import org.example.parser.xlsxParser
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -17,7 +18,7 @@ fun main() {
     )
 
     transaction {
-        SchemaUtils.create(Employee, CourseHistory)
+        SchemaUtils.create(Employee, CourseHistory, Skill)
     }
 
     val employees = xlsxParser("data/ERP_SK1.Start_month - SE.xlsx")
@@ -25,4 +26,11 @@ fun main() {
 
     val coursesHistory = xlsxParser("data/RE_VZD_STA_007.xlsx")
     Repository.insertCourses(coursesHistory)
+
+    val skillsMapping = xlsxParser(
+        path = "data/Skill_mapping.xlsx",
+        sheetIndex = 7
+    )
+
+    Repository.insertSkills(skillsMapping)
 }

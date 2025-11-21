@@ -17,7 +17,16 @@ object Repository {
         transaction {
             CourseHistory.batchInsert(rows) { row ->
                 this[CourseHistory.personalNumber] = row["ID účastníka"]!!
-                this[CourseHistory.objectId] = row["IDOBJ"]!!
+                this[CourseHistory.objectId] = row["IDOBJ"]!!.removePrefix("E ")
+            }
+        }
+    }
+
+    fun insertSkills(rows: List<Map<String, String?>>) {
+        transaction {
+            Skill.batchInsert(rows) { row ->
+                this[Skill.objectId] = row["ID objektu"]!!
+                this[Skill.name] = row["Skill v EN"]
             }
         }
     }
