@@ -11,6 +11,8 @@ data class EmployeeDTO(
     val username: String,
     @SerialName("profession")
     val profession: String,
+    @SerialName("planned_profession")
+    val plannedProfession: String,
     @SerialName("planned_position_id")
     val plannedPositionId: String,
     @SerialName("planned_position")

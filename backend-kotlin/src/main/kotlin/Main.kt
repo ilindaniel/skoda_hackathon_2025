@@ -1,16 +1,21 @@
 package org.example
 
+import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
+import org.example.dao.Course
 import org.example.dao.CourseHistory
+import org.example.dao.CourseSkill
 import org.example.dao.Employee
 import org.example.dao.Position
+import org.example.dao.Qualification
 import org.example.dao.Repository
 import org.example.dao.Skill
 import org.example.parser.xlsxParser
@@ -42,13 +47,20 @@ fun main() {
                 val positions = Repository.getAllPositions()
                 call.respond(positions)
             }
+
+            get ("/api/profile") {
+                val personalNumber = call.request.queryParameters["personal_number"]
+                    ?: return@get call.respondText("Missing personal_number", status = HttpStatusCode.BadRequest)
+                val profile = Repository.getProfile(personalNumber)
+                call.respond(profile)
+            }
         }
     }.start(wait = true)
 }
 
 fun initializeDatabase() {
     transaction {
-        SchemaUtils.create(Employee, CourseHistory, Skill, Position)
+        SchemaUtils.create(Employee, CourseSkill, Course, CourseHistory, Skill, Position, Qualification)
 
         if (Employee.selectAll().empty()) {
             val employees = xlsxParser("data/ERP_SK1.Start_month - SE.xlsx")
@@ -56,22 +68,38 @@ fun initializeDatabase() {
             Repository.insertPositions(employees)
         }
 
-        if (CourseHistory.selectAll().empty()) {
-            val coursesHistory = xlsxParser("data/RE_VZD_STA_007.xlsx")
-            Repository.insertCourses(coursesHistory)
+        if (Skill.selectAll().empty()) {
+            val skills = xlsxParser(
+                path = "data/Skill_mapping.xlsx",
+                sheetIndex = 6
+            )
+            Repository.insertSkills(skills)
         }
 
-        if (Skill.selectAll().empty()) {
-            val skillsMapping = xlsxParser(
+        if (Course.selectAll().empty()) {
+            val mapping = xlsxParser(
                 path = "data/Skill_mapping.xlsx",
                 sheetIndex = 7
             )
-            Repository.insertSkills(skillsMapping)
+            Repository.insertCourses(mapping)
         }
 
-//        if (Qualification.selectAll().empty()) {
-//            val requiredQualifications = xlsxParser("data/ZPE_KOM_KVAL.xlsx")
-//            Repository.insertRequiredQualifications(requiredQualifications)
-//        }
+        if (CourseSkill.selectAll().empty()) {
+            val mapping = xlsxParser(
+                path = "data/Skill_mapping.xlsx",
+                sheetIndex = 7
+            )
+            Repository.mapSkillCourse(mapping)
+        }
+
+        if (CourseHistory.selectAll().empty()) {
+            val coursesHistory = xlsxParser("data/RE_VZD_STA_007.xlsx")
+            Repository.insertCourseHistories(coursesHistory)
+        }
+
+        if (Qualification.selectAll().empty()) {
+            val qualifications = xlsxParser("data/RE_RHRHAZ00.xlsx")
+            Repository.insertQualifications(qualifications)
+        }
     }
 }
